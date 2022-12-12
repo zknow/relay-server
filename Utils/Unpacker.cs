@@ -1,5 +1,5 @@
 using System.Text;
-using RelayServer.Models;
+using RelayServer.Core;
 
 namespace RelayServer.Utils;
 
@@ -14,21 +14,21 @@ public class Unpacker
         for (i = 0; i < len; i++)
         {
             // Check封包長度是否大於等於HeaderLen長度，否=>不處理，等待下一包
-            if (len < i + PackHeader.HeaderLen + PackHeader.DataLen)
+            if (len < i + PackHeader.ConstHeaderLen + PackHeader.ConstDataLen)
                 break;
 
-            string bufHeader = Encoding.ASCII.GetString(buf[i..(i + PackHeader.HeaderLen)]);
-            if (bufHeader == PackHeader.Header)
+            string bufHeader = Encoding.ASCII.GetString(buf[i..(i + PackHeader.ConstHeaderLen)]);
+            if (bufHeader == PackHeader.ConstHeader)
             {
-                byte[] msgLenBytes = buf[(i + PackHeader.HeaderLen)..(i + PackHeader.HeaderLen + PackHeader.DataLen)];
+                byte[] msgLenBytes = buf[(i + PackHeader.ConstHeaderLen)..(i + PackHeader.ConstHeaderLen + PackHeader.ConstDataLen)];
                 int msgLen = BitConverter.ToInt32(msgLenBytes);
 
                 // Check未檢查封包長度是否超過原始風包長度，是=>不處理，等待下一包封包
-                int unhandledPackLen = PackHeader.HeaderLen + PackHeader.DataLen + msgLen;
+                int unhandledPackLen = PackHeader.ConstHeaderLen + PackHeader.ConstDataLen + msgLen;
                 if (len < i + unhandledPackLen)
                     break;
 
-                int unHandledPackIndex = (i + PackHeader.HeaderLen + PackHeader.DataLen);
+                int unHandledPackIndex = (i + PackHeader.ConstHeaderLen + PackHeader.ConstDataLen);
                 byte[] legitPack = buf[(unHandledPackIndex)..(unHandledPackIndex + msgLen)];
                 legitPackCallback?.Invoke(legitPack);
 

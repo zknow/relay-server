@@ -10,7 +10,7 @@ public class RspPackGenerator
     public static byte[] AttachHeader(byte[] bytes)
     {
         var buf = new List<byte>();
-        buf.AddRange(Encoding.ASCII.GetBytes(PackHeader.Header));
+        buf.AddRange(Encoding.ASCII.GetBytes(PackHeader.ConstHeader));
         buf.AddRange(BitConverter.GetBytes(bytes.Length));
         buf.AddRange(bytes);
         return buf.ToArray();
